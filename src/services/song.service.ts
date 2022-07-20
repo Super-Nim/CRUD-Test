@@ -1,90 +1,94 @@
-import { Injectable } from '@nestjs/common'
-import { Song } from '../entities/song.entity'
-import { ArtistRepository } from '../repositories/artist.repository'
-import { SongRepository } from '../repositories/song.repository'
+import { Injectable } from "@nestjs/common";
+import { Song } from "../entities/song.entity";
+import { ArtistRepository } from "../repositories/artist.repository";
+import { SongRepository } from "../repositories/song.repository";
 
 @Injectable()
 export class SongService {
   constructor(
     private songRepository: SongRepository,
-    private artistRepository: ArtistRepository,
+    private artistRepository: ArtistRepository
   ) {}
 
   async create(req: any) {
     try {
-      const song = new Song()
-      song.songTitle = req.songTitle
-      song.description = req.description
-      song.songFileUrl = req.songFileUrl
-      const artistCollection = []
+      const song = new Song();
+      song.songTitle = req.songTitle;
+      song.description = req.description;
+      song.songFileUrl = req.songFileUrl;
+      const artistCollection = [];
 
       if (req.artist) {
-        for (let i = 0; i < req.artist.length; i++) {
-          const artist = await this.artistRepository.findOne(req.artist[i])
-          if (artist) {
-            artistCollection.push(artist)
-          }
-        }
+        await Promise.all(
+          req.artist.map(async (artistId: number) => {
+            const artist = await this.artistRepository.findOne(artistId);
+            if (artist) {
+              artistCollection.push(artist);
+            }
+            return artistCollection;
+          })
+        );
       }
-      song.artists = artistCollection
+      song.artists = artistCollection;
 
-      return await song.save()
+      return await song.save();
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
-  async getAll(query: any): Promise<any> {
-    return await this.songRepository.findAll(query)
+  async getAll(query: any) {
+    return await this.songRepository.findAll(query);
   }
 
-  async getById(id: number) {
-    return await this.songRepository.findOne(id)
+  async getById(id: number): Promise<Song> {
+    return await this.songRepository.findOne(id);
   }
 
   async update(
     song: Song,
     updateParams: {
-      songTitle?: string
-      description?: string
-      songFileUrl?: string
-      artist?: []
-    },
+      songTitle?: string;
+      description?: string;
+      songFileUrl?: string;
+      artist?: [];
+    }
   ) {
     try {
       if (updateParams.songTitle) {
-        song.songTitle = updateParams.songTitle
+        song.songTitle = updateParams.songTitle;
       }
       if (updateParams.description) {
-        song.description = updateParams.description
+        song.description = updateParams.description;
       }
       if (updateParams.songFileUrl) {
-        song.songFileUrl = updateParams.songFileUrl
+        song.songFileUrl = updateParams.songFileUrl;
       }
+      const artistCollection = [];
 
       if (updateParams.artist) {
-        const artistCollection = []
-        for (let i = 0; i < updateParams.artist.length; i++) {
-          const artist = await this.artistRepository.findOne(
-            updateParams.artist[i],
-          )
-          if (artist) {
-            artistCollection.push(artist)
-          }
-        }
-        song.artists = artistCollection
+        await Promise.all(
+          updateParams.artist.map(async (artistId: number) => {
+            const artist = await this.artistRepository.findOne(artistId);
+            if (artist) {
+              artistCollection.push(artist);
+            }
+            return artistCollection;
+          })
+        );
       }
-      return await song.save()
+      song.artists = artistCollection;
+      return await song.save();
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
   async delete(id: number) {
     try {
-      await this.songRepository.delete(id)
+      await this.songRepository.delete(id);
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 }
