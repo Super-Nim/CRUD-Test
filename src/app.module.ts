@@ -14,11 +14,17 @@ import { HttpModule } from "@nestjs/axios";
 import { ConfigModule } from "@nestjs/config";
 import { Song } from "./entities/song.entity";
 import { Artist } from "./entities/artist.entity";
+import { ArtistController } from "./controllers/artist.controller";
+import { ArtistService } from "./services/artist.service";
+import { ArtistRepository } from "./repositories/artist.repository";
+import { SongRepository } from "./repositories/song.repository";
+import { SongsController } from "./controllers/song.controller";
+import { SongService } from "./services/song.service";
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmModule.forFeature([Song, Artist]),
+    TypeOrmModule.forFeature([Song, Artist, ArtistRepository, SongRepository]),
     TypeOrmModule.forRoot(typeOrmConfig),
     LoggerModule.forRoot({
       pinoHttp:
@@ -38,8 +44,13 @@ import { Artist } from "./entities/artist.entity";
       }),
     }),
   ],
-  controllers: [HealthChkController, AppController],
-  providers: [HealthChkService, AppService],
+  controllers: [
+    HealthChkController,
+    AppController,
+    ArtistController,
+    SongsController,
+  ],
+  providers: [HealthChkService, AppService, ArtistService, SongService],
   exports: [],
 })
 export class AppModule {}

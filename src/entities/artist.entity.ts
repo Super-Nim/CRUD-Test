@@ -8,49 +8,50 @@ import {
   CreateDateColumn,
   ManyToMany,
   JoinTable,
-} from 'typeorm'
-import { Song } from './song.entity'
+} from "typeorm";
+import { Song } from "./song.entity";
+import { ApiProperty } from "@nestjs/swagger";
 
 @Entity()
 export class Artist extends BaseEntity {
   @PrimaryGeneratedColumn({
-    type: 'bigint',
+    type: "bigint",
   })
-  id: number
+  id: number;
 
   @Column()
-  @Generated('uuid')
-  uuid: string
+  @Generated("uuid")
+  uuid: string;
 
   @Column({
-    type: 'varchar',
-    length: '50',
-    name: 'name',
+    type: "varchar",
+    length: "50",
+    name: "name",
     nullable: false,
   })
-  artistName: string
+  artistName: string;
 
-  @Column('text', { nullable: true })
-  description: string
+  @Column("text", { nullable: true })
+  description: string;
 
-  @Column({ nullable: false, default: 0, name: 'is_deleted' })
-  isDeleted: boolean
+  @Column({ nullable: false, default: 0, name: "is_deleted" })
+  isDeleted: boolean;
 
   @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-    name: 'created_at',
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP(6)",
+    name: "created_at",
   })
-  public createdAt: Date
+  public createdAt: Date;
 
   @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-    onUpdate: 'CURRENT_TIMESTAMP(6)',
-    name: 'updated_at',
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP(6)",
+    onUpdate: "CURRENT_TIMESTAMP(6)",
+    name: "updated_at",
   })
-  public updatedAt: Date
+  public updatedAt: Date;
 
   @ManyToMany(() => Song, (song) => song.artists)
-  songs: Song[]
+  songs: Song[];
 }
