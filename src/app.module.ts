@@ -14,11 +14,11 @@ import { HttpModule } from "@nestjs/axios";
 import { ConfigModule } from "@nestjs/config";
 import { Song } from "./entities/song.entity";
 import { Artist } from "./entities/artist.entity";
-import { ArtistController } from "./controllers/artist.controller";
+import { ArtistController } from "./controllers/artists.controller";
 import { ArtistService } from "./services/artist.service";
 import { ArtistRepository } from "./repositories/artist.repository";
 import { SongRepository } from "./repositories/song.repository";
-import { SongsController } from "./controllers/song.controller";
+import { SongsController } from "./controllers/songs.controller";
 import { SongService } from "./services/song.service";
 
 @Module({

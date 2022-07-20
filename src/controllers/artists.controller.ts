@@ -10,10 +10,11 @@ import {
   HttpStatus,
   Res,
   NotFoundException,
+  Query,
+  HttpCode,
 } from "@nestjs/common";
 
 import { ArtistService } from "../services/artist.service";
-import { Request, Response } from "express";
 import { Artist } from "../entities/artist.entity";
 import { ArtistRepository } from "../repositories/artist.repository";
 import { ApiTags } from "@nestjs/swagger";
@@ -27,39 +28,36 @@ export class ArtistController {
   ) {}
 
   @Get()
-  async findAll(@Req() req: Request, @Res() res: Response) {
-    const list = await this.artistService.getAll(req.query);
-    return res.status(200).send(list);
+  @HttpCode(HttpStatus.OK)
+  async findAll(@Query() query) {
+    return await this.artistService.getAll(query);
   }
 
   @Get(":id")
-  async findById(@Param("id") id: string, @Res() res: Response) {
+  @HttpCode(HttpStatus.OK)
+  async findById(@Param("id") id: number) {
     const artist = await this.artistRepository.findOne(id);
     if (!artist) {
       throw new NotFoundException("Artist not found");
     }
-    return res.status(200).send(artist);
+    return artist;
   }
 
   @Patch(":id")
-  async update(
-    @Param("id") id: string,
-    @Body() patchData: Artist,
-    @Res() res: Response
-  ) {
+  @HttpCode(HttpStatus.OK)
+  async update(@Param("id") id: number, @Body() patchData: Artist) {
     const artist = await this.artistRepository.findOne(id);
     if (!artist) {
       throw new NotFoundException("Artist not found");
     }
     await this.artistService.update(+id, patchData);
-    res.status(200).send({ message: "Artist updated" });
-    return;
+    return { message: "Artist updated" };
   }
 
   @Post("")
-  async create(@Body() postData: Artist, @Res() res: Response) {
+  @HttpCode(HttpStatus.OK)
+  async create(@Body() postData: Artist) {
     await this.artistService.create(postData);
-    res.status(200).send({ message: "Artist Successfully added" });
-    return;
+    return { message: "Artist Successfully added" };
   }
 }

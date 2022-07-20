@@ -10,6 +10,8 @@ import {
   HttpStatus,
   Res,
   NotFoundException,
+  HttpCode,
+  Query,
 } from "@nestjs/common";
 
 import { SongService } from "../services/song.service";
@@ -27,42 +29,41 @@ export class SongsController {
   ) {}
 
   @Get()
-  async findAll(@Req() req: Request, @Res() res: Response) {
-    const list = await this.songService.getAll(req.query);
-    return res.status(HttpStatus.OK).send(list);
+  @HttpCode(HttpStatus.OK)
+  async findAll(@Query() query) {
+    return await this.songService.getAll(query);
   }
+
   @Get(":id")
-  async findById(@Param("id") id: string, @Res() res: Response) {
+  @HttpCode(HttpStatus.OK)
+  async findById(@Param("id") id: string) {
     const song = await this.songRepository.findOne(id);
     if (!song) {
       throw new NotFoundException("Song not found");
     }
-    return res.status(HttpStatus.OK).send(song);
+    return song;
   }
 
   @Patch(":id")
-  async update(
-    @Param("id") id: string,
-    @Body() patchData: Song,
-    @Res() res: Response
-  ) {
+  @HttpCode(HttpStatus.OK)
+  async update(@Param("id") id: string, @Body() patchData: Song) {
     const song = await this.songRepository.findOne(id);
     if (!song) {
       throw new NotFoundException("Song not found");
     }
     await this.songService.update(song, patchData);
-    res.status(HttpStatus.OK).send({ message: "Song successfully updated" });
-    return;
+    return { message: "Song successfully updated" };
   }
 
   @Post("")
-  async create(@Body() postData: Song, @Res() res: Response) {
+  @HttpCode(HttpStatus.OK)
+  async create(@Body() postData: Song) {
     await this.songService.create(postData);
-    res.status(HttpStatus.OK).send({ message: "Song successfully added" });
-    return;
+    return { message: "Song successfully added" };
   }
 
   @Delete(":id")
+  @HttpCode(HttpStatus.OK)
   async delete(@Param("id") id: string, @Res() res: Response) {
     const song = await this.songRepository.findOne(id);
     if (!song) {
@@ -70,7 +71,6 @@ export class SongsController {
     }
 
     await this.songService.delete(parseInt(id));
-    res.status(HttpStatus.OK).send({ message: "Song successfully deleted" });
-    return;
+    return { message: "Song successfully deleted" };
   }
 }
