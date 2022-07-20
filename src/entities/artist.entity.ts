@@ -14,11 +14,17 @@ import { ApiProperty } from "@nestjs/swagger";
 
 @Entity()
 export class Artist extends BaseEntity {
+  @ApiProperty({
+    deprecated: true,
+  })
   @PrimaryGeneratedColumn({
     type: "bigint",
   })
   id: number;
 
+  @ApiProperty({
+    deprecated: true,
+  })
   @Column()
   @Generated("uuid")
   uuid: string;
@@ -30,20 +36,25 @@ export class Artist extends BaseEntity {
     nullable: false,
   })
   artistName: string;
-
   @Column("text", { nullable: true })
   description: string;
-
+  @ApiProperty({
+    deprecated: true,
+  })
   @Column({ nullable: false, default: 0, name: "is_deleted" })
   isDeleted: boolean;
-
+  @ApiProperty({
+    deprecated: true,
+  })
   @CreateDateColumn({
     type: "timestamp",
     default: () => "CURRENT_TIMESTAMP(6)",
     name: "created_at",
   })
   public createdAt: Date;
-
+  @ApiProperty({
+    deprecated: true,
+  })
   @UpdateDateColumn({
     type: "timestamp",
     default: () => "CURRENT_TIMESTAMP(6)",
@@ -51,7 +62,9 @@ export class Artist extends BaseEntity {
     name: "updated_at",
   })
   public updatedAt: Date;
-
+  @ApiProperty({
+    deprecated: true,
+  })
   @ManyToMany(() => Song, (song) => song.artists)
   songs: Song[];
 }
