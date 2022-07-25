@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Req,
   HttpStatus,
   Res,
   NotFoundException,
@@ -15,7 +14,6 @@ import {
 } from "@nestjs/common";
 
 import { SongService } from "../services/song.service";
-import { Request, Response } from "express";
 import { Song } from "../entities/song.entity";
 import { SongRepository } from "../repositories/song.repository";
 import { ApiTags } from "@nestjs/swagger";

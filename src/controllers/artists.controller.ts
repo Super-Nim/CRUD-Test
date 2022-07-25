@@ -5,10 +5,7 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
-  Req,
   HttpStatus,
-  Res,
   NotFoundException,
   Query,
   HttpCode,
@@ -21,7 +18,7 @@ import { ApiTags } from "@nestjs/swagger";
 
 @Controller("artist")
 @ApiTags("Artist")
-export class ArtistController {
+export class ArtistsController {
   constructor(
     private artistService: ArtistService,
     private artistRepository: ArtistRepository
@@ -50,8 +47,8 @@ export class ArtistController {
     if (!artist) {
       throw new NotFoundException("Artist not found");
     }
-    await this.artistService.update(+id, patchData);
-    return { message: "Artist updated" };
+    const updatedArtist = await this.artistService.update(+id, patchData);
+    return { data: updatedArtist, message: "Artist updated" };
   }
 
   @Post("")
