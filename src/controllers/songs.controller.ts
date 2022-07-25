@@ -34,7 +34,7 @@ export class SongsController {
 
   @Get(":id")
   @HttpCode(HttpStatus.OK)
-  async findById(@Param("id") id: string) {
+  async findById(@Param("id") id: number) {
     const song = await this.songRepository.findOne(id);
     if (!song) {
       throw new NotFoundException("Song not found");
@@ -44,13 +44,13 @@ export class SongsController {
 
   @Patch(":id")
   @HttpCode(HttpStatus.OK)
-  async update(@Param("id") id: string, @Body() patchData: Song) {
+  async update(@Param("id") id: number, @Body() patchData: Song) {
     const song = await this.songRepository.findOne(id);
     if (!song) {
       throw new NotFoundException("Song not found");
     }
-    await this.songService.update(song, patchData);
-    return { message: "Song successfully updated" };
+    const updatedSong = await this.songService.update(song, patchData);
+    return { data: updatedSong, message: "Song successfully updated" };
   }
 
   @Post("")
@@ -62,13 +62,13 @@ export class SongsController {
 
   @Delete(":id")
   @HttpCode(HttpStatus.OK)
-  async delete(@Param("id") id: string, @Res() res: Response) {
+  async delete(@Param("id") id: number) {
     const song = await this.songRepository.findOne(id);
     if (!song) {
       throw new NotFoundException("Song not found");
     }
 
-    await this.songService.delete(parseInt(id));
+    await this.songService.delete(id);
     return { message: "Song successfully deleted" };
   }
 }
