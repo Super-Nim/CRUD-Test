@@ -1,34 +1,40 @@
-import { Injectable } from '@nestjs/common'
-import { ArtistRepository } from '../repositories/artist.repository'
+import { Injectable } from "@nestjs/common";
+import { Artist } from "../entities/artist.entity";
+import { ArtistRepository } from "../repositories/artist.repository";
 
 @Injectable()
 export class ArtistService {
   constructor(private artistRepository: ArtistRepository) {}
 
-  create(req: any) {
+  create(postData: Artist) {
     try {
-      return this.artistRepository.save(req)
+      return this.artistRepository.save(postData);
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
-  async getAll(query: any): Promise<any> {
-    return await this.artistRepository.findAll(query)
+  async getAll(query: {
+    name?: string;
+    isDeleted?: boolean;
+    page: number;
+    perPage: number;
+  }): Promise<any> {
+    return await this.artistRepository.findAll(query);
   }
 
   async getById(id: number) {
-    return await this.artistRepository.findOne(id)
+    return await this.artistRepository.findOne(id);
   }
 
   async update(
     id: number,
-    updateParams: { artistName: string; description: string },
+    updateParams: { artistName: string; description: string }
   ) {
     try {
-      return await this.artistRepository.update(id, updateParams)
+      return await this.artistRepository.update(id, updateParams);
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 }

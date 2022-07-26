@@ -10,7 +10,7 @@ export class SongService {
     private artistRepository: ArtistRepository
   ) {}
 
-  async create(req: any) {
+  async create(req: Song) {
     try {
       const song = new Song();
       song.songTitle = req.songTitle;
@@ -18,12 +18,12 @@ export class SongService {
       song.songFileUrl = req.songFileUrl;
       const artistCollection = [];
 
-      if (req.artist) {
+      if (req.artists) {
         await Promise.all(
-          req.artist.map(async (artistId: number) => {
-            const artist = await this.artistRepository.findOne(artistId);
-            if (artist) {
-              artistCollection.push(artist);
+          req.artists.map(async (artist) => {
+            const artistObj = await this.artistRepository.findOne(artist);
+            if (artistObj) {
+              artistCollection.push(artistObj);
             }
             return artistCollection;
           })
