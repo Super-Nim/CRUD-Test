@@ -38,7 +38,7 @@ export class ArtistsController {
   @ApiOperation({ summary: "Fetch an artist", description: "Fetches an artist by its id"})
   @ApiResponse({ status: 200, description: "Artist successfully fetched" })
   async findById(@Param("id") id: number) {
-    const artist = await this.artistRepository.findOne(id);
+    const artist = await this.artistRepository.findById(id);
     if (!artist) {
       throw new NotFoundException("Artist not found");
     }
