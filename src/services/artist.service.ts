@@ -37,4 +37,14 @@ export class ArtistService {
       throw error;
     }
   }
+
+  async delete(
+    id: number
+  ) {
+    try {
+      return await this.artistRepository.delete(id);
+    } catch (error) {
+      throw error;
+    }
+  }
 }
