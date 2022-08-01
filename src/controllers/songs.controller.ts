@@ -16,7 +16,7 @@ import {
 import { SongService } from "../services/song.service";
 import { Song } from "../entities/song.entity";
 import { SongRepository } from "../repositories/song.repository";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 @Controller("songs")
 @ApiTags("Songs")
@@ -28,12 +28,22 @@ export class SongsController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Fetch all songs",
+    description: "Fetches all of the songs, unfiltered",
+  })
+  @ApiResponse({ status: 200, description: "Songs successfully fetched" })
   async findAll(@Query() query) {
     return await this.songService.getAll(query);
   }
 
   @Get(":id")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Fetch a song",
+    description: "Fetches a song by its id",
+  })
+  @ApiResponse({ status: 200, description: "Song successfully fetched" })
   async findById(@Param("id") id: number) {
     const song = await this.songRepository.findOne(id);
     if (!song) {
@@ -44,6 +54,11 @@ export class SongsController {
 
   @Patch(":id")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Update a song",
+    description: "Updates a song by its id",
+  })
+  @ApiResponse({ status: 200, description: "Songs successfully updated" })
   async update(@Param("id") id: number, @Body() patchData: Song) {
     const song = await this.songRepository.findOne(id);
     if (!song) {
@@ -55,6 +70,11 @@ export class SongsController {
 
   @Post("")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Add a song",
+    description: "Adds a song to the database",
+  })
+  @ApiResponse({ status: 200, description: "Song successfully added" })
   async create(@Body() postData: Song) {
     await this.songService.create(postData);
     return { message: "Song successfully added" };
@@ -62,6 +82,11 @@ export class SongsController {
 
   @Delete(":id")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Delete a song",
+    description: "Deletes a song by its id",
+  })
+  @ApiResponse({ status: 200, description: "Song successfully deleted" })
   async delete(@Param("id") id: number) {
     const song = await this.songRepository.findOne(id);
     if (!song) {
