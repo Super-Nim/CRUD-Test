@@ -45,7 +45,8 @@ export class SongsController {
   })
   @ApiResponse({ status: 200, description: "Song successfully fetched" })
   async findById(@Param("id") id: number) {
-    const song = await this.songRepository.findOne(id);
+    const song = await this.songRepository.findById(id);
+    console.log('song by id: ', song);
     if (!song) {
       throw new NotFoundException("Song not found");
     }

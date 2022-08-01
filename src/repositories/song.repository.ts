@@ -1,56 +1,74 @@
-import { EntityRepository, QueryBuilder, Repository } from 'typeorm'
-import { Song } from '../entities/song.entity'
+import { EntityRepository, QueryBuilder, Repository } from "typeorm";
+import { Song } from "../entities/song.entity";
 
 @EntityRepository(Song)
 export class SongRepository extends Repository<Song> {
   async queryBuilder() {
-    return this.createQueryBuilder('song')
+    return this.createQueryBuilder("song");
   }
 
   async findAll(filters: {
-    title?: string
-    isDeleted?: boolean
-    artist?: number
-    type?: string
-    page: number
-    perPage: number
+    title?: string;
+    isDeleted?: boolean;
+    artist?: number;
+    type?: string;
+    page: number;
+    perPage: number;
   }) {
-    const builder = await this.queryBuilder()
+    const builder = await this.queryBuilder();
 
     builder.select([
-      'song.id',
-      'song.uuid',
-      'song.songTitle',
-      'song.songFileUrl',
-      'song.description',
-    ])
+      "song.id",
+      "song.uuid",
+      "song.songTitle",
+      "song.songFileUrl",
+      "song.description",
+    ]);
 
-    builder.leftJoinAndSelect('song.artists', 'artist')
+    builder.leftJoinAndSelect("song.artists", "artist");
 
     if (filters.title) {
-      builder.where('song.title = :title', {
+      builder.where("song.title = :title", {
         title: filters.title,
-      })
+      });
     }
 
     if (filters.isDeleted) {
-      builder.andWhere('song.is_deleted =:isDeleted', {
+      builder.andWhere("song.is_deleted =:isDeleted", {
         isDeleted: filters.isDeleted,
-      })
+      });
     }
 
     const [data, count] = await builder
       .skip(
         ((filters.page ? filters.page : 1) - 1) *
-          (filters.perPage ? filters.perPage : 10),
+          (filters.perPage ? filters.perPage : 10)
       )
-      .orderBy('song.id', 'DESC')
+      .orderBy("song.id", "DESC")
       .take(filters.perPage)
-      .getManyAndCount()
+      .getManyAndCount();
 
     return {
       data,
       count,
-    }
+    };
+  }
+
+  async findById(id: number) {
+    const builder = await this.queryBuilder();
+
+    builder.select([
+      "song.id",
+      "song.uuid",
+      "song.songTitle",
+      "song.songFileUrl",
+      "song.description",
+    ]);
+
+    builder.leftJoinAndSelect("song.artists", "artist");
+
+    const data = await builder.where("song.id =:id", { id: id }).getOne();
+
+    return data;
   }
 }
