@@ -66,5 +66,9 @@ export class Artist extends BaseEntity {
     deprecated: true,
   })
   @ManyToMany(() => Song, (song) => song.artists)
+  @JoinTable()
+  @ApiProperty({
+    example: "[]",
+  })
   songs: Song[];
 }

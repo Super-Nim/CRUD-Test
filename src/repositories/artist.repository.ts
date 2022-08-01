@@ -15,11 +15,21 @@ export class ArtistRepository extends Repository<Artist> {
   }) {
     const builder = await this.queryBuilder()
     builder.select(['artist.id', 'artist.uuid', 'artist.artistName'])
+    // LEFT JOIN artist's songs property
+    builder.leftJoinAndSelect('artist.songs', 'songs')
+
     if (filters.name) {
       builder.where('artist.name = :name', {
         name: filters.name,
       })
     }
+
+    if (filters.isDeleted) {
+      builder.andWhere('song.is_deleted =:isDeleted', {
+        isDeleted: filters.isDeleted,
+      })
+    }
+
     const [data, count] = await builder
       .skip(
         ((filters.page ? filters.page : 1) - 1) *
