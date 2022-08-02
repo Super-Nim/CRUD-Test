@@ -46,7 +46,6 @@ export class SongsController {
   @ApiResponse({ status: 200, description: "Song successfully fetched" })
   async findById(@Param("id") id: number) {
     const song = await this.songRepository.findById(id);
-    console.log('song by id: ', song);
     if (!song) {
       throw new NotFoundException("Song not found");
     }
@@ -61,7 +60,7 @@ export class SongsController {
   })
   @ApiResponse({ status: 200, description: "Songs successfully updated" })
   async update(@Param("id") id: number, @Body() patchData: Song) {
-    const song = await this.songRepository.findOne(id);
+    const song = await this.songRepository.findById(id);
     if (!song) {
       throw new NotFoundException("Song not found");
     }
@@ -89,7 +88,7 @@ export class SongsController {
   })
   @ApiResponse({ status: 200, description: "Song successfully deleted" })
   async delete(@Param("id") id: number) {
-    const song = await this.songRepository.findOne(id);
+    const song = await this.songRepository.findById(id);
     if (!song) {
       throw new NotFoundException("Song not found");
     }

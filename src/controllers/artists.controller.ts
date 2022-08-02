@@ -50,11 +50,11 @@ export class ArtistsController {
   @ApiOperation({ summary: "Update an artist", description: "Updates an artist by its id"})
   @ApiResponse({ status: 200, description: "Artist successfully updated" })
   async update(@Param("id") id: number, @Body() patchData: Artist) {
-    const artist = await this.artistRepository.findOne(id);
+    const artist = await this.artistRepository.findById(id);
     if (!artist) {
       throw new NotFoundException("Artist not found");
     }
-    const updatedArtist = await this.artistService.update(+id, patchData);
+    const updatedArtist = await this.artistService.update(artist, patchData);
     return { data: updatedArtist, message: "Artist updated" };
   }
 
@@ -72,7 +72,7 @@ export class ArtistsController {
   @ApiOperation({ summary: "Delete an artist", description: "Deletes an artist by its id"})
   @ApiResponse({ status: 200, description: "Artist successfully deleted" })
   async delete(@Param("id") id: number) {
-    const artist = await this.artistRepository.findOne(id);
+    const artist = await this.artistRepository.findById(id);
     if (!artist) {
       throw new NotFoundException("Artist not found")
     }

@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { Artist } from "src/entities/artist.entity";
 import { Song } from "../entities/song.entity";
 import { ArtistRepository } from "../repositories/artist.repository";
 import { SongRepository } from "../repositories/song.repository";
@@ -16,7 +17,7 @@ export class SongService {
       song.songTitle = req.songTitle;
       song.description = req.description;
       song.songFileUrl = req.songFileUrl;
-      const artistCollection = [];
+      const artistCollection: Artist[] = [];
 
       if (req.artists) {
         await Promise.all(
@@ -51,7 +52,7 @@ export class SongService {
       songTitle?: string;
       description?: string;
       songFileUrl?: string;
-      artist?: [];
+      artists?: Artist[];
     }
   ) {
     try {
@@ -64,14 +65,14 @@ export class SongService {
       if (updateParams.songFileUrl) {
         song.songFileUrl = updateParams.songFileUrl;
       }
-      const artistCollection = [];
+      const artistCollection: Artist[] = [];
 
-      if (updateParams.artist) {
+      if (updateParams.artists) {
         await Promise.all(
-          updateParams.artist.map(async (artistId: number) => {
-            const artist = await this.artistRepository.findOne(artistId);
-            if (artist) {
-              artistCollection.push(artist);
+          updateParams.artists.map(async (artist) => {
+            const artistObj = await this.artistRepository.findOne(artist);
+            if (artistObj) {
+              artistCollection.push(artistObj);
             }
             return artistCollection;
           })

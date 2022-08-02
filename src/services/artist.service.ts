@@ -1,14 +1,39 @@
 import { Injectable } from "@nestjs/common";
+import { Song } from "src/entities/song.entity";
+import { SongRepository } from "src/repositories/song.repository";
 import { Artist } from "../entities/artist.entity";
 import { ArtistRepository } from "../repositories/artist.repository";
 
 @Injectable()
 export class ArtistService {
-  constructor(private artistRepository: ArtistRepository) {}
+  constructor(private artistRepository: ArtistRepository, private songRepository: SongRepository) {}
 
-  create(postData: Artist) {
+  async create(req: Artist) {
     try {
-      return this.artistRepository.save(postData);
+      const artist = new Artist();
+      artist.artistName = req.artistName;
+      artist.description = req.description;
+      const songCollection: Song[] = [];
+      // if song ids have been inputted
+      if (req.songs) {
+        // wait for all of the songs to be queried
+        await Promise.all(
+          // map through each song id
+          req.songs.map(async (song) => {
+            const songObj = await this.songRepository.findOne(song);
+            console.log('SONGOBJ: ', songObj);
+            // if song exists, push into songCollection
+            if (songObj) {
+              songCollection.push(songObj);
+            }
+            return songCollection;
+          })
+        )
+      }
+      // assign songs property
+      artist.songs = songCollection;
+
+      return await artist.save();
     } catch (error) {
       throw error;
     }
@@ -28,11 +53,35 @@ export class ArtistService {
   }
 
   async update(
-    id: number,
-    updateParams: { artistName: string; description: string }
+    artist: Artist,
+    updateParams: { artistName?: string; description?: string, songs?: Song[] }
   ) {
     try {
-      return await this.artistRepository.update(id, updateParams);
+
+      if (updateParams.artistName) {
+        artist.artistName = updateParams.artistName;
+      }
+      if (updateParams.description) {
+        artist.description = updateParams.description;
+      }
+      const songCollection: Song[] = [];
+
+      if (updateParams.songs) {
+        // wait for all of the songs to be queried
+        await Promise.all(
+          // map through each song id
+          updateParams.songs.map(async (song) => {
+            const songObj = await this.songRepository.findOne(song);
+            // if song exists, push into songCollection
+            if (songObj) {
+              songCollection.push(songObj);
+            }
+            return songCollection;
+          })
+        )
+      }
+      artist.songs = songCollection;
+      return await artist.save();
     } catch (error) {
       throw error;
     }
@@ -42,7 +91,7 @@ export class ArtistService {
     id: number
   ) {
     try {
-      return await this.artistRepository.delete(id);
+     await this.artistRepository.delete(id);
     } catch (error) {
       throw error;
     }
