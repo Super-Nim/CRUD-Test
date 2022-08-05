@@ -9,12 +9,17 @@ describe("ArtistsController", () => {
   const mockArtistService = {
     getAll: jest.fn(),
     create: jest.fn(),
-    update: jest
-      .fn()
-      .mockImplementation((id, patchData) => ({ id, ...patchData })),
+    update: jest.fn().mockImplementation((artist, patchData) => {
+      const patched = { ...artist, ...patchData };
+      return patched;
+    }),
+    delete: jest.fn().mockImplementation((artist) => {
+      return artist = undefined;
+    }),
   };
   const mockArtistRepository = {
     findOne: jest.fn(),
+    findById: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -41,14 +46,17 @@ describe("ArtistsController", () => {
         return null;
       });
 
-      expect(async () => {
-        await controller.findById(123);
-      }).rejects.toThrow("Artist not found");
+      try {
+        async () => await controller.findById(123);
+      } catch (error) {
+        expect(error).toBeInstanceOf(TypeError);
+        expect(error).toHaveProperty("message", "Artist not found");
+      }
     });
 
-    it("should return a artist", async () => {
+    it("should return an artist", async () => {
       const artist = { id: 123 };
-      mockArtistRepository.findOne = jest.fn(() => {
+      mockArtistRepository.findById = jest.fn(() => {
         const artistObj = new Artist();
         artistObj.id = 123;
         return artistObj;
@@ -72,32 +80,32 @@ describe("ArtistsController", () => {
 
   describe("update", () => {
     it("should throw NotFoundException: Artist not found", async () => {
-      const patchData = new Artist();
-      mockArtistRepository.findOne = jest.fn(() => {
-        return null;
-      });
-
-      expect(async () => {
-        await controller.update(123, patchData);
-      }).rejects.toThrow("Artist not found");
+      try {
+        mockArtistRepository.findById = jest.fn(() => {
+          return null;
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(TypeError);
+        expect(error).toHaveProperty("message", "Artist not found");
+      }
     });
 
     it("should update artist name", async () => {
       const patchData = new Artist();
       patchData.artistName = "Updated Artist";
 
-      mockArtistRepository.findOne = jest.fn(() => {
+      mockArtistRepository.findById = jest.fn(() => {
         const artistObj = new Artist();
         artistObj.id = 123;
         artistObj.artistName = "Old Artist";
         return artistObj;
       });
 
+      // patchData has same id as artistObj, update artistName
       expect(await controller.update(123, patchData)).toEqual({
         data: { artistName: "Updated Artist", id: 123 },
         message: "Artist updated",
       });
-      expect(mockArtistService.update).toHaveBeenCalledWith(123, patchData);
       expect(mockArtistService.update).toBeCalledTimes(1);
     });
   });
@@ -112,6 +120,22 @@ describe("ArtistsController", () => {
       });
       expect(mockArtistService.create).toHaveBeenCalledWith(postData);
       expect(mockArtistService.create).toBeCalledTimes(1);
+    });
+  });
+
+  describe("delete", () => {
+    it("should delete a new artist", async () => {
+      mockArtistRepository.findById = jest.fn(() => {
+        const artist = new Artist();
+        artist.id = 123;
+        return artist;
+      });
+
+      expect(await controller.delete(123)).toEqual({
+        message: "Artist successfully deleted",
+      });
+      expect(mockArtistService.delete).toHaveBeenCalledWith(123);
+      expect(mockArtistService.delete).toBeCalledTimes(1);
     });
   });
 });

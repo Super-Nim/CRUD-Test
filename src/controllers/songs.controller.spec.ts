@@ -14,7 +14,7 @@ describe("SongsController", () => {
   };
 
   const mockSongRepository = {
-    findOne: {},
+    findById: jest.fn(),
   };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -49,7 +49,7 @@ describe("SongsController", () => {
 
   describe("findById", () => {
     it("should throw NotFoundException: Song not found", async () => {
-      mockSongRepository.findOne = jest.fn(() => {
+      mockSongRepository.findById = jest.fn(() => {
         return null;
       });
 
@@ -60,7 +60,7 @@ describe("SongsController", () => {
 
     it("should return a song", async () => {
       const song = { id: 123, songTitle: "Test Title" };
-      mockSongRepository.findOne = jest.fn(() => {
+      mockSongRepository.findById = jest.fn(() => {
         const songObj = new Song();
         songObj.id = 123;
         songObj.songTitle = "Test Title";
@@ -73,7 +73,7 @@ describe("SongsController", () => {
   describe("update", () => {
     it("should throw NotFoundException: Song not found", async () => {
       const patchData = new Song();
-      mockSongRepository.findOne = jest.fn(() => {
+      mockSongRepository.findById = jest.fn(() => {
         return null;
       });
 
@@ -86,7 +86,7 @@ describe("SongsController", () => {
       const patchData = new Song();
       patchData.songTitle = "Updated song title";
 
-      mockSongRepository.findOne = jest.fn(() => {
+      mockSongRepository.findById = jest.fn(() => {
         const songObj = new Song();
         songObj.id = 123;
         songObj.songTitle = "Old Song";
@@ -124,7 +124,7 @@ describe("SongsController", () => {
 
   describe("delete", () => {
     it("should throw NotFoundException: Song not found", async () => {
-      mockSongRepository.findOne = jest.fn(() => {
+      mockSongRepository.findById = jest.fn(() => {
         return null;
       });
 
@@ -135,8 +135,10 @@ describe("SongsController", () => {
   });
 
   it("should delete song", async () => {
-    mockSongRepository.findOne = jest.fn(() => {
-      return new Song();
+    mockSongRepository.findById = jest.fn(() => {
+      const song = new Song();
+      song.id = 123;
+      return song;
     });
 
     expect(await controller.delete(123)).toEqual({
