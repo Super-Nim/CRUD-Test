@@ -21,7 +21,6 @@ export class ArtistService {
           // map through each song id
           req.songs.map(async (song) => {
             const songObj = await this.songRepository.findOne(song);
-            console.log('SONGOBJ: ', songObj);
             // if song exists, push into songCollection
             if (songObj) {
               songCollection.push(songObj);

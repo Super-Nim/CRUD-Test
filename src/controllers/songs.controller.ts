@@ -33,6 +33,7 @@ export class SongsController {
     description: "Fetches all of the songs, unfiltered",
   })
   @ApiResponse({ status: 200, description: "Songs successfully fetched" })
+  @ApiResponse({ status: 500, description: "Internal server error" })
   async findAll(@Query() query) {
     return await this.songService.getAll(query);
   }
@@ -44,6 +45,8 @@ export class SongsController {
     description: "Fetches a song by its id",
   })
   @ApiResponse({ status: 200, description: "Song successfully fetched" })
+  @ApiResponse({ status: 404, description: "Song not found" })
+  @ApiResponse({ status: 500, description: "Internal server error" })
   async findById(@Param("id") id: number) {
     const song = await this.songRepository.findById(id);
     if (!song) {
@@ -59,6 +62,8 @@ export class SongsController {
     description: "Updates a song by its id",
   })
   @ApiResponse({ status: 200, description: "Songs successfully updated" })
+  @ApiResponse({ status: 404, description: "Song not found" })
+  @ApiResponse({ status: 500, description: "Internal server error" })
   async update(@Param("id") id: number, @Body() patchData: Song) {
     const song = await this.songRepository.findById(id);
     if (!song) {
@@ -75,6 +80,8 @@ export class SongsController {
     description: "Adds a song to the database",
   })
   @ApiResponse({ status: 200, description: "Song successfully added" })
+  @ApiResponse({ status: 404, description: "Song not found" })
+  @ApiResponse({ status: 500, description: "Internal server error" })
   async create(@Body() postData: Song) {
     await this.songService.create(postData);
     return { message: "Song successfully added" };
@@ -87,6 +94,8 @@ export class SongsController {
     description: "Deletes a song by its id",
   })
   @ApiResponse({ status: 200, description: "Song successfully deleted" })
+  @ApiResponse({ status: 404, description: "Song not found" })
+  @ApiResponse({ status: 500, description: "Internal server error" })
   async delete(@Param("id") id: number) {
     const song = await this.songRepository.findById(id);
     if (!song) {

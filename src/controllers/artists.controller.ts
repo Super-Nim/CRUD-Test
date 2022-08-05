@@ -29,6 +29,7 @@ export class ArtistsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Fetch all artists", description: "Fetches all artists, unfiltered"})
   @ApiResponse({ status: 200, description: "Artists successfully fetched" })
+  @ApiResponse({ status: 500, description: "Internal server error" })
   async findAll(@Query() query) {
     return await this.artistService.getAll(query);
   }
@@ -37,6 +38,8 @@ export class ArtistsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Fetch an artist", description: "Fetches an artist by its id"})
   @ApiResponse({ status: 200, description: "Artist successfully fetched" })
+  @ApiResponse({ status: 404, description: "Artist not found" })
+  @ApiResponse({ status: 500, description: "Internal server error" })
   async findById(@Param("id") id: number) {
     const artist = await this.artistRepository.findById(id);
     if (!artist) {
@@ -49,6 +52,8 @@ export class ArtistsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Update an artist", description: "Updates an artist by its id"})
   @ApiResponse({ status: 200, description: "Artist successfully updated" })
+  @ApiResponse({ status: 404, description: "Artist not found" })
+  @ApiResponse({ status: 500, description: "Internal server error" })
   async update(@Param("id") id: number, @Body() patchData: Artist) {
     const artist = await this.artistRepository.findById(id);
     if (!artist) {
@@ -61,7 +66,9 @@ export class ArtistsController {
   @Post("")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Add an artist", description: "Adds an artist by its id"})
-  @ApiResponse({ status: 200, description: "Artist successfully deleted" })
+  @ApiResponse({ status: 200, description: "Artist successfully Added" })
+  @ApiResponse({ status: 404, description: "Artist not found" })
+  @ApiResponse({ status: 500, description: "Internal server error" })
   async create(@Body() postData: Artist) {
     await this.artistService.create(postData);
     return { message: "Artist Successfully added" };
@@ -71,6 +78,8 @@ export class ArtistsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Delete an artist", description: "Deletes an artist by its id"})
   @ApiResponse({ status: 200, description: "Artist successfully deleted" })
+  @ApiResponse({ status: 404, description: "Artist not found" })
+  @ApiResponse({ status: 500, description: "Internal server error" })
   async delete(@Param("id") id: number) {
     const artist = await this.artistRepository.findById(id);
     if (!artist) {
